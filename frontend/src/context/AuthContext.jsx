@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { jwtDecode } from "jwt-decode";
+import api from "../api/axios";
 
 const AuthContext = createContext();
 
@@ -13,11 +14,42 @@ export function AuthProvider({ children }) {
       try {
         const decoded = jwtDecode(token);
         setUser(decoded);
-      } catch {
-        localStorage.removeItem("access");
+      } catch (error) {
+        console.error("Invalid token:", error);
+        logout();
       }
     }
   }, []);
+
+  const login = async (email, password) => {
+    try {
+      console.log("1. Sending login request...");
+
+      const response = await api.post("auth/login/", {
+        email,
+        password,
+      });
+
+      console.log("2. Login successful:", response.data);
+
+      localStorage.setItem("access", response.data.access);
+      localStorage.setItem("refresh", response.data.refresh);
+
+      const decoded = jwtDecode(response.data.access);
+      setUser(decoded);
+
+      console.log("3. Fetching current user...");
+
+      const me = await api.get("auth/me/");
+
+      console.log("4. User loaded:", me.data);
+
+      return me.data;
+    } catch (error) {
+      console.error("Login failed:", error);
+      throw error;
+    }
+  };
 
   const logout = () => {
     localStorage.removeItem("access");
@@ -29,7 +61,7 @@ export function AuthProvider({ children }) {
     <AuthContext.Provider
       value={{
         user,
-        setUser,
+        login,
         logout,
       }}
     >

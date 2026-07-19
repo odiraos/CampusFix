@@ -1,15 +1,19 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { jwtDecode } from "jwt-decode";
 
-import api from "../../api/axios";
-import { useAuth } from "../../context/AuthContext";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+
+import { useAuth } from "@/context/AuthContext";
 
 export default function Login() {
   const navigate = useNavigate();
-  const { setUser } = useAuth();
+  const { login } = useAuth();
 
-  const [formData, setFormData] = useState({
+  const [form, setForm] = useState({
     email: "",
     password: "",
   });
@@ -17,8 +21,8 @@ export default function Login() {
   const [error, setError] = useState("");
 
   const handleChange = (e) => {
-    setFormData({
-      ...formData,
+    setForm({
+      ...form,
       [e.target.name]: e.target.value,
     });
   };
@@ -26,22 +30,10 @@ export default function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    setError("");
-
     try {
-      const response = await api.post("auth/login/", formData);
+      const user = await login(form.email, form.password);
 
-      localStorage.setItem("access", response.data.access);
-      localStorage.setItem("refresh", response.data.refresh);
-
-      const decoded = jwtDecode(response.data.access);
-
-      setUser(decoded);
-
-      const userResponse = await api.get("auth/me/");
-      const role = userResponse.data.role;
-
-      switch (role) {
+      switch (user.role) {
         case "ADMIN":
           navigate("/admin");
           break;
@@ -53,45 +45,61 @@ export default function Login() {
         default:
           navigate("/student");
       }
-    } catch (err) {
+    } catch {
       setError("Invalid email or password.");
-      console.error(err);
     }
   };
+  
 
   return (
-    <div style={{ maxWidth: "400px", margin: "80px auto" }}>
-      <h2>CampusFix Login</h2>
+    <div className="min-h-screen bg-slate-100 flex items-center justify-center px-4">
+      <Card className="w-full max-w-md shadow-xl">
+        <CardHeader>
+          <CardTitle className="text-3xl text-center">
+            CampusFix
+          </CardTitle>
 
-      <form onSubmit={handleSubmit}>
-        <input
-          type="email"
-          name="email"
-          placeholder="Email"
-          onChange={handleChange}
-          required
-        />
+          <p className="text-center text-slate-500">
+            Campus Maintenance Management System
+          </p>
+        </CardHeader>
 
-        <br /><br />
+        <CardContent>
+          <form onSubmit={handleSubmit} className="space-y-5">
 
-        <input
-          type="password"
-          name="password"
-          placeholder="Password"
-          onChange={handleChange}
-          required
-        />
+            <div>
+              <Label>Email Address</Label>
 
-        <br /><br />
+              <Input
+                name="email"
+                type="email"
+                onChange={handleChange}
+              />
+            </div>
 
-        <button type="submit">
-          Login
-        </button>
+            <div>
+              <Label>Password</Label>
 
-        {error && (
-          <p style={{ color: "red" }}>{error}</p>
-        )}
-      </form>
+              <Input
+                name="password"
+                type="password"
+                onChange={handleChange}
+              />
+            </div>
+
+            {error && (
+              <Alert variant="destructive">
+                <AlertDescription>{error}</AlertDescription>
+              </Alert>
+            )}
+
+            <Button type="submit" className="w-full">
+              Sign In
+            </Button>
+
+          </form>
+        </CardContent>
+      </Card>
     </div>
   );
 }
