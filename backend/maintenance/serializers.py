@@ -26,8 +26,7 @@ class MaintenanceRequestSerializer(serializers.ModelSerializer):
             "created_at",
             "updated_at",
         )
-
-
+        
 class AssignRequestSerializer(serializers.Serializer):
     assigned_to = serializers.PrimaryKeyRelatedField(
         queryset=User.objects.filter(role="MAINTENANCE_OFFICER")

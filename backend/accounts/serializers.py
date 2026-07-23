@@ -6,14 +6,26 @@ from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 User = get_user_model()
 
 class UserSerializer(serializers.ModelSerializer):
+    full_name = serializers.SerializerMethodField()
+
     class Meta:
         model = User
         fields = (
-            'id', 'email', 'first_name', 'last_name', 'role',
-            'phone_number', 'department', 'profile_picture',
-            'created_at', 'updated_at'
+            "id",
+            "email",
+            "first_name",
+            "last_name",
+            "full_name",
+            "role",
         )
-        read_only_fields = ('id', 'created_at', 'updated_at')
+
+    def get_full_name(self, obj):
+        name = obj.get_full_name().strip()
+
+        if name:
+            return name
+
+        return obj.email
 
 class UserRegistrationSerializer(serializers.ModelSerializer):
     password = serializers.CharField(

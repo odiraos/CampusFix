@@ -4,6 +4,7 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from django.contrib.auth import get_user_model
 
+
 from .serializers import (
     UserSerializer,
     UserRegistrationSerializer,
@@ -37,3 +38,10 @@ class UserMeView(generics.RetrieveUpdateAPIView):
 
     def get_object(self):
         return self.request.user
+    
+class MaintenanceOfficerListView(generics.ListAPIView):
+    serializer_class = UserSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return User.objects.filter(role="MAINTENANCE_OFFICER")    

@@ -1,5 +1,10 @@
+from urllib import request
+
 from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.decorators import action
+from rest_framework.response import Response
+from rest_framework import status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework import status
@@ -11,7 +16,9 @@ from .serializers import (
 
 from .models import MaintenanceRequest
 from .serializers import MaintenanceRequestSerializer
-
+from django.contrib.auth import get_user_model
+from rest_framework.views import APIView
+User = get_user_model()
 
 class MaintenanceRequestViewSet(viewsets.ModelViewSet):
     serializer_class = MaintenanceRequestSerializer
@@ -34,21 +41,75 @@ class MaintenanceRequestViewSet(viewsets.ModelViewSet):
         return MaintenanceRequest.objects.filter(
             reported_by=user
         ).order_by("-created_at")
+        
+        return MaintenanceRequest.objects.all().order_by("-created_at")
 
     def perform_create(self, serializer):
         serializer.save(reported_by=self.request.user)
+        
+    @action(detail=True, methods=["patch"])
+    def update_status(self, request, pk=None):
+        maintenance_request = self.get_object()
+
+        new_status = request.data.get("status")
+
+        valid_statuses = [
+            choice[0] for choice in MaintenanceRequest.Status.choices
+        ]
+
+        if new_status not in valid_statuses:
+            return Response(
+                {"error": "Invalid status."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        maintenance_request.status = new_status
+        maintenance_request.save()
+
+        return Response(
+        MaintenanceRequestSerializer(maintenance_request).data
+        )
+        
     @action(detail=True, methods=["patch"])
     def assign(self, request, pk=None):
         maintenance_request = self.get_object()
+
         serializer = AssignRequestSerializer(data=request.data)
 
         if serializer.is_valid():
             maintenance_request.assigned_to = serializer.validated_data["assigned_to"]
-            maintenance_request.status = "ASSIGNED"
+            maintenance_request.status = MaintenanceRequest.Status.ASSIGNED
             maintenance_request.save()
 
-        return Response(
-            MaintenanceRequestSerializer(maintenance_request).data
-        )
+            return Response(
+                MaintenanceRequestSerializer(maintenance_request).data
+            )
 
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response(
+            serializer.errors,
+            status=status.HTTP_400_BAD_REQUEST,
+        )
+    
+class AdminDashboardView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+
+        data = {
+            "total_users": User.objects.count(),
+            "total_officers": User.objects.filter(
+                role="MAINTENANCE_OFFICER"
+            ).count(),
+            "total_requests": MaintenanceRequest.objects.count(),
+            "pending_requests": MaintenanceRequest.objects.filter(
+                status="PENDING"
+            ).count(),
+            "completed_requests": MaintenanceRequest.objects.filter(
+                status="COMPLETED"
+            ).count(),
+            "in_progress_requests": MaintenanceRequest.objects.filter(
+                status="IN_PROGRESS"
+            ).count(),
+        }
+
+        return Response(data)

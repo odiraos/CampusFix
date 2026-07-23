@@ -3,7 +3,7 @@ import { Card, CardContent } from "@/components/ui/card";
 
 export default function StudentDashboard() {
   return (
-    <DashboardLayout>
+    <DashboardLayout title="Student Dashboard">
       <div className="space-y-6">
         <div>
           <h2 className="text-3xl font-bold">Welcome 👋</h2>

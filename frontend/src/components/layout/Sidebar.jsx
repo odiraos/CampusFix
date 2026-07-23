@@ -15,7 +15,17 @@ import {
 
 export default function Sidebar() {
   const navigate = useNavigate();
-  const { logout } = useAuth();
+  const { logout, user } = useAuth();
+
+  const dashboardRoute =
+    user?.role === "ADMIN"
+      ? "/admin"
+      : user?.role === "MAINTENANCE_OFFICER"
+        ? "/officer"
+        : "/student";
+  console.log("Sidebar user:", user);
+  console.log("Sidebar role:", user?.role);
+  console.log("Dashboard route:", dashboardRoute);
 
   const handleLogout = () => {
     logout();
@@ -31,7 +41,7 @@ export default function Sidebar() {
       <nav className="space-y-4">
 
         <NavLink
-          to="/student"
+          to={dashboardRoute}
           className="flex items-center gap-3 hover:text-green-400"
         >
           <LayoutDashboard size={20} />
@@ -39,12 +49,26 @@ export default function Sidebar() {
         </NavLink>
 
         <NavLink
-          to="/student"
+          to={
+            user?.role === "ADMIN"
+              ? "/admin/requests"
+              : user?.role === "MAINTENANCE_OFFICER"
+                ? "/officer/requests"
+                : "/student/requests"
+          }
+          className="flex items-center gap-3 hover:text-green-400"
+        >
+          <ClipboardList size={20} />
+          Requests
+        </NavLink>
+
+        <NavLink
+          to="/student/report"
           className="flex items-center gap-3 hover:text-green-400">
 
           <ClipboardList size={20} />
 
-          Requests
+          Report Issue
 
         </NavLink>
 
