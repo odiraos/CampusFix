@@ -9,6 +9,7 @@ import ReportIssue from "./pages/student/ReportIssue";
 import MyRequests from "./pages/student/MyRequests";
 import OfficerRequests from "./pages/officer/OfficerRequests";
 import AdminRequests from "./pages/admin/AdminRequests";
+import AdminUsers from "./pages/admin/AdminUsers";
 
 export default function App() {
   return (
@@ -23,6 +24,7 @@ export default function App() {
         <Route path="/student/requests/:id" element={<RequestDetails />}/>
         <Route path="/officer/requests" element={<OfficerRequests />} />
         <Route path="/admin/requests" element={<AdminRequests />} />
+        <Route path="/admin/users" element={<AdminUsers />} />
       </Routes>
     </BrowserRouter>
   );

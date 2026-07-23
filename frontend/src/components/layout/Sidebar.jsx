@@ -27,6 +27,13 @@ export default function Sidebar() {
   console.log("Sidebar role:", user?.role);
   console.log("Dashboard route:", dashboardRoute);
 
+  console.log(user);
+  console.log("Role:", user?.role);
+
+  const isAdmin = user?.role === "ADMIN";
+  const isOfficer = user?.role === "MAINTENANCE_OFFICER";
+  const isStudent = user?.role === "STUDENT_STAFF";
+
   const handleLogout = () => {
     logout();
     navigate("/");
@@ -48,59 +55,55 @@ export default function Sidebar() {
           Dashboard
         </NavLink>
 
-        <NavLink
-          to={
-            user?.role === "ADMIN"
-              ? "/admin/requests"
-              : user?.role === "MAINTENANCE_OFFICER"
-                ? "/officer/requests"
-                : "/student/requests"
-          }
-          className="flex items-center gap-3 hover:text-green-400"
-        >
-          <ClipboardList size={20} />
-          Requests
-        </NavLink>
+        {isStudent && (
+          <>
+            <NavLink
+              to="/student/report"
+              className="flex items-center gap-3 hover:text-green-400"
+            >
+              <PlusCircle size={20} />
+              Report Issue
+            </NavLink>
 
-        <NavLink
-          to="/student/report"
-          className="flex items-center gap-3 hover:text-green-400">
+            <NavLink
+              to="/student/requests"
+              className="flex items-center gap-3 hover:text-green-400"
+            >
+              <ClipboardList size={20} />
+              My Requests
+            </NavLink>
+          </>
+        )}
 
-          <ClipboardList size={20} />
+        {isOfficer && (
+          <NavLink
+            to="/officer/requests"
+            className="flex items-center gap-3 hover:text-green-400"
+          >
+            <Wrench size={20} />
+            Assigned Requests
+          </NavLink>
+        )}
 
-          Report Issue
+        {isAdmin && (
+          <>
+            <NavLink
+              to="/admin/requests"
+              className="flex items-center gap-3 hover:text-green-400"
+            >
+              <ClipboardList size={20} />
+              Manage Requests
+            </NavLink>
 
-        </NavLink>
-
-        <NavLink
-          to="/student"
-          className="flex items-center gap-3 hover:text-green-400">
-
-          <Users size={20} />
-
-          Users
-
-        </NavLink>
-
-        <NavLink
-          to="/student"
-          className="flex items-center gap-3 hover:text-green-400">
-
-          <Wrench size={20} />
-
-          Officers
-
-        </NavLink>
-
-        <NavLink
-          to="/student"
-          className="flex items-center gap-3 hover:text-green-400">
-
-          <Settings size={20} />
-
-          Settings
-
-        </NavLink>
+            <NavLink
+              to="/admin/users"
+              className="flex items-center gap-3 hover:text-green-400"
+            >
+              <Users size={20} />
+              Users
+            </NavLink>
+          </>
+        )}
 
       </nav>
 

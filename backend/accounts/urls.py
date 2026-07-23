@@ -6,6 +6,7 @@ from .views import (
     CustomTokenObtainPairView,
     UserMeView,
     MaintenanceOfficerListView,
+    UserListView,
 )
 
 urlpatterns = [
@@ -13,9 +14,14 @@ urlpatterns = [
     path("login/", CustomTokenObtainPairView.as_view(), name="login"),
     path("token/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
     path("me/", UserMeView.as_view(), name="me"),
-     path(
+    path(
         "officers/",
         MaintenanceOfficerListView.as_view(),
         name="maintenance_officers",
+    ),
+    path(
+    "users/",
+    UserListView.as_view(),
+    name="users",
     ),
 ]

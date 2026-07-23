@@ -45,3 +45,9 @@ class MaintenanceOfficerListView(generics.ListAPIView):
 
     def get_queryset(self):
         return User.objects.filter(role="MAINTENANCE_OFFICER")    
+class UserListView(generics.ListAPIView):
+    serializer_class = UserSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return User.objects.all().order_by("first_name", "email")
