@@ -1,42 +1,56 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, LogIn } from "lucide-react";
 
 import { useAuth } from "@/context/AuthContext";
 
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Button } from "@/components/ui/button";
 
 export default function Login() {
   const navigate = useNavigate();
   const { login } = useAuth();
+
+  const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const [form, setForm] = useState({
     email: "",
     password: "",
   });
 
-  const [loading, setLoading] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
+  const demoAccounts = {
+    student: {
+      email: "student1@test.com",
+      password: "Test123!",
+    },
+    officer: {
+      email: "officer@test.com",
+      password: "Test123!",
+    },
+    admin: {
+      email: "admin@campusfix.com",
+      password: "Admin123!",
+    },
+  };
+
+  function fillDemo(role) {
+    setForm(demoAccounts[role]);
+  }
 
   function handleChange(e) {
-    setForm((previous) => ({
-      ...previous,
+    setForm((prev) => ({
+      ...prev,
       [e.target.name]: e.target.value,
     }));
   }
 
   async function handleSubmit(e) {
     e.preventDefault();
+
     setLoading(true);
 
     try {
@@ -67,66 +81,95 @@ export default function Login() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-100 flex items-center justify-center px-4">
-      <Card className="w-full max-w-md shadow-xl">
+    <div className="min-h-screen grid lg:grid-cols-2">
 
-        <CardHeader>
-          <CardTitle className="text-3xl text-center">
-            CampusFix
-          </CardTitle>
+      {/* LEFT PANEL */}
 
-          <p className="text-center text-slate-500">
-            Campus Maintenance Management System
+      <div className="hidden lg:flex bg-slate-900 text-white flex-col justify-center px-20">
+
+        <h1 className="text-6xl font-bold">
+          CampusFix
+        </h1>
+
+        <p className="mt-6 text-2xl text-slate-300">
+          Smart Campus Maintenance,
+          <br />
+          One Request Away.
+        </p>
+
+        <div className="mt-14 space-y-5 text-lg text-slate-300">
+
+          <p>✔ Submit maintenance requests</p>
+
+          <p>✔ Track repair progress in real-time</p>
+
+          <p>✔ Receive instant notifications</p>
+
+          <p>✔ Dedicated dashboards for every role</p>
+
+        </div>
+
+      </div>
+
+      {/* RIGHT PANEL */}
+
+      <div className="flex items-center justify-center bg-slate-100 p-8">
+
+        <Card className="w-full max-w-md p-8 shadow-xl">
+
+          <h2 className="text-4xl font-bold">
+            Sign In
+          </h2>
+
+          <p className="text-slate-500 mt-2 mb-8">
+            Enter your university credentials to continue.
           </p>
-        </CardHeader>
-
-        <CardContent>
 
           <form
             onSubmit={handleSubmit}
-            className="space-y-5"
+            className="space-y-6"
           >
 
             <div>
-              <Label htmlFor="email">
-                Email Address
-              </Label>
+
+              <Label>Email Address</Label>
 
               <Input
-                id="email"
                 name="email"
                 type="email"
-                placeholder="Enter your email"
-                autoComplete="email"
-                required
+                placeholder="you@university.edu"
                 value={form.email}
                 onChange={handleChange}
+                required
               />
+
             </div>
 
             <div>
-              <Label htmlFor="password">
-                Password
-              </Label>
+
+              <Label>Password</Label>
 
               <div className="relative">
 
                 <Input
-                  id="password"
                   name="password"
-                  type={showPassword ? "text" : "password"}
+                  type={
+                    showPassword
+                      ? "text"
+                      : "password"
+                  }
                   placeholder="Enter your password"
-                  autoComplete="current-password"
-                  required
                   value={form.password}
                   onChange={handleChange}
-                  className="pr-10"
+                  required
                 />
 
                 <button
                   type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-700"
+                  onClick={() =>
+                    setShowPassword(!showPassword)
+                  }
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500"
                 >
                   {showPassword ? (
                     <EyeOff size={18} />
@@ -136,31 +179,88 @@ export default function Login() {
                 </button>
 
               </div>
+
             </div>
-            
+
             <Button
               type="submit"
-              className="w-full"
+              className="w-full h-12 text-lg"
               disabled={loading}
             >
-              {loading ? "Signing In..." : "Sign In"}
+              <LogIn className="mr-2 h-5 w-5" />
+
+              {loading
+                ? "Signing In..."
+                : "Sign In"}
             </Button>
 
-            <p className="mt-4 text-center text-sm text-slate-500">
+            <div className="flex items-center gap-4">
+
+              <div className="flex-1 border-t" />
+
+              <span className="text-sm text-slate-500">
+                OR
+              </span>
+
+              <div className="flex-1 border-t" />
+
+            </div>
+
+            <p className="text-center text-sm">
+
               Don't have an account?{" "}
+
               <Link
                 to="/register"
-                className="font-medium text-emerald-600 hover:underline"
+                className="font-semibold text-emerald-600 hover:underline"
               >
                 Create one
               </Link>
+
             </p>
+
+            <div className="rounded-lg bg-slate-50 border p-4">
+
+              <p className="text-center text-xs uppercase tracking-wide text-slate-500 mb-3">
+                Click to Autofill Demo Accounts
+              </p>
+
+              <div className="flex flex-wrap justify-center gap-3">
+
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => fillDemo("student")}
+                >
+                  Student / Staff
+                </Button>
+
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => fillDemo("officer")}
+                >
+                  Maintenance Officer
+                </Button>
+
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => fillDemo("admin")}
+                >
+                  Administrator
+                </Button>
+
+              </div>
+
+            </div>
 
           </form>
 
-        </CardContent>
+        </Card>
 
-      </Card>
+      </div>
+
     </div>
   );
 }
