@@ -18,17 +18,56 @@ User = get_user_model()
 class UserRegistrationView(generics.CreateAPIView):
     queryset = User.objects.all()
     serializer_class = UserRegistrationSerializer
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated]
 
     def create(self, request, *args, **kwargs):
+        if request.user.role != "ADMIN":
+            return Response(
+                {"error": "Permission denied."},
+                status=status.HTTP_403_FORBIDDEN,
+            )
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        user = serializer.save()
-        user_data = UserSerializer(user).data
+        
+        user = serializer.save()        
+    
         return Response({
             "message": "User registered successfully.",
-            "user": user_data
+            "user": UserSerializer(user).data,
         }, status=status.HTTP_201_CREATED)
+        
+        
+class DeleteUserView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def delete(self, request, pk):
+        if request.user.role != "ADMIN":
+            return Response(
+                {"error": "Permission denied."},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+
+        try:
+            user = User.objects.get(pk=pk)
+        except User.DoesNotExist:
+            return Response(
+                {"error": "User not found."},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+
+        if user.role == "ADMIN":
+            return Response(
+                {"error": "Admin accounts cannot be deleted."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        user.delete()
+
+        return Response(
+            {"message": "User deleted successfully."},
+            status=status.HTTP_204_NO_CONTENT,
+        )
+        
 
 class CustomTokenObtainPairView(TokenObtainPairView):
     serializer_class = CustomTokenObtainPairSerializer
@@ -49,7 +88,7 @@ class UserListView(generics.ListAPIView):
         if self.request.user.role != "ADMIN":
             return User.objects.none()
 
-        return User.objects.all().order_by("first_name")
+        return User.objects.all().order_by("first_name", "email")
         
 class MaintenanceOfficerListView(generics.ListAPIView):
     serializer_class = UserSerializer
@@ -57,12 +96,6 @@ class MaintenanceOfficerListView(generics.ListAPIView):
 
     def get_queryset(self):
         return User.objects.filter(role="MAINTENANCE_OFFICER")    
-class UserListView(generics.ListAPIView):
-    serializer_class = UserSerializer
-    permission_classes = [IsAuthenticated]
-
-    def get_queryset(self):
-        return User.objects.all().order_by("first_name", "email")
     
 class UpdateUserRoleView(APIView):
     permission_classes = [IsAuthenticated]

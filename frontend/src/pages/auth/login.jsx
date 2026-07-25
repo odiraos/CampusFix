@@ -1,6 +1,7 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
+import { Eye, EyeOff } from "lucide-react";
 
 import { useAuth } from "@/context/AuthContext";
 
@@ -25,6 +26,7 @@ export default function Login() {
   });
 
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   function handleChange(e) {
     setForm((previous) => ({
@@ -57,7 +59,7 @@ export default function Login() {
         default:
           navigate("/student");
       }
-    } catch (error){
+    } catch (error) {
       toast.error("Invalid email or password.");
     } finally {
       setLoading(false);
@@ -107,18 +109,35 @@ export default function Login() {
                 Password
               </Label>
 
-              <Input
-                id="password"
-                name="password"
-                type="password"
-                placeholder="Enter your password"
-                autoComplete="current-password"
-                required
-                value={form.password}
-                onChange={handleChange}
-              />
-            </div>
+              <div className="relative">
 
+                <Input
+                  id="password"
+                  name="password"
+                  type={showPassword ? "text" : "password"}
+                  placeholder="Enter your password"
+                  autoComplete="current-password"
+                  required
+                  value={form.password}
+                  onChange={handleChange}
+                  className="pr-10"
+                />
+
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-700"
+                >
+                  {showPassword ? (
+                    <EyeOff size={18} />
+                  ) : (
+                    <Eye size={18} />
+                  )}
+                </button>
+
+              </div>
+            </div>
+            
             <Button
               type="submit"
               className="w-full"
@@ -126,6 +145,16 @@ export default function Login() {
             >
               {loading ? "Signing In..." : "Sign In"}
             </Button>
+
+            <p className="mt-4 text-center text-sm text-slate-500">
+              Don't have an account?{" "}
+              <Link
+                to="/register"
+                className="font-medium text-emerald-600 hover:underline"
+              >
+                Create one
+              </Link>
+            </p>
 
           </form>
 
