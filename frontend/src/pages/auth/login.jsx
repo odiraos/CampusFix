@@ -32,7 +32,7 @@ export default function Login() {
       password: "Test123!",
     },
     admin: {
-      email: "admin@campusfix.com",
+      email: "admin1@campusfix.com",
       password: "Admin123!",
     },
   };
