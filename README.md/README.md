@@ -119,6 +119,8 @@ PATCH /api/auth/users/:id/role/
 DELETE /api/auth/users/:id/
 ```
 
+API documentation link: https://documenter.getpostman.com/view/23729517/2sBY4QtfX7
+
 ---
 
 ## Screenshots
