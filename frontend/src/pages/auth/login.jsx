@@ -1,13 +1,19 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useAuth } from "@/context/AuthContext";
+
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-
-import { useAuth } from "@/context/AuthContext";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -18,20 +24,26 @@ export default function Login() {
     password: "",
   });
 
-  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const handleChange = (e) => {
-    setForm({
-      ...form,
+  function handleChange(e) {
+    setForm((previous) => ({
+      ...previous,
       [e.target.name]: e.target.value,
-    });
-  };
+    }));
+  }
 
-  const handleSubmit = async (e) => {
+  async function handleSubmit(e) {
     e.preventDefault();
+    setLoading(true);
 
     try {
-      const user = await login(form.email, form.password);
+      const user = await login(
+        form.email.trim(),
+        form.password
+      );
+
+      toast.success("Welcome back!");
 
       switch (user.role) {
         case "ADMIN":
@@ -45,15 +57,17 @@ export default function Login() {
         default:
           navigate("/student");
       }
-    } catch {
-      setError("Invalid email or password.");
+    } catch (error){
+      toast.error("Invalid email or password.");
+    } finally {
+      setLoading(false);
     }
-  };
-  
+  }
 
   return (
     <div className="min-h-screen bg-slate-100 flex items-center justify-center px-4">
       <Card className="w-full max-w-md shadow-xl">
+
         <CardHeader>
           <CardTitle className="text-3xl text-center">
             CampusFix
@@ -65,40 +79,58 @@ export default function Login() {
         </CardHeader>
 
         <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-5">
+
+          <form
+            onSubmit={handleSubmit}
+            className="space-y-5"
+          >
 
             <div>
-              <Label>Email Address</Label>
+              <Label htmlFor="email">
+                Email Address
+              </Label>
 
               <Input
+                id="email"
                 name="email"
                 type="email"
+                placeholder="Enter your email"
+                autoComplete="email"
+                required
+                value={form.email}
                 onChange={handleChange}
               />
             </div>
 
             <div>
-              <Label>Password</Label>
+              <Label htmlFor="password">
+                Password
+              </Label>
 
               <Input
+                id="password"
                 name="password"
                 type="password"
+                placeholder="Enter your password"
+                autoComplete="current-password"
+                required
+                value={form.password}
                 onChange={handleChange}
               />
             </div>
 
-            {error && (
-              <Alert variant="destructive">
-                <AlertDescription>{error}</AlertDescription>
-              </Alert>
-            )}
-
-            <Button type="submit" className="w-full">
-              Sign In
+            <Button
+              type="submit"
+              className="w-full"
+              disabled={loading}
+            >
+              {loading ? "Signing In..." : "Sign In"}
             </Button>
 
           </form>
+
         </CardContent>
+
       </Card>
     </div>
   );

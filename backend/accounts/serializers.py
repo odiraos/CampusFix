@@ -78,3 +78,8 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
         data['user'] = user_serializer.data
         
         return data
+    
+class UpdateUserRoleSerializer(serializers.Serializer):
+    role = serializers.ChoiceField(
+        choices=User.Role.choices
+    )

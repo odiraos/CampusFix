@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import DashboardLayout from "@/components/layout/DashboardLayout";
 import api from "@/api/axios";
+import StatusBadge from "@/components/common/StatusBadge";
 
 import { Link } from "react-router-dom";
 
@@ -49,23 +50,34 @@ export default function MyRequests() {
                             </thead>
 
                             <tbody>
-                                {requests.map((request) => (
-                                    <tr key={request.id} className="border-b">
-                                        <td className="py-3">
+                                {requests.length === 0 ? (
+                                    <div className="text-center py-12 text-slate-500">
+                                        <p className="text-lg font-medium">
+                                            No maintenance requests found.
+                                        </p>
+                                        <p className="text-sm">
+                                            Requests will appear here once they are submitted.
+                                        </p>
+                                    </div>
+                                ) : (
+                                    requests.map((request) => (
+                                        <tr key={request.id} className="border-b">
+                                            <td className="py-3">
 
-                                            <Link
-                                                to={`/student/requests/${request.id}`}
-                                                className="text-green-600 hover:underline"
-                                            >
-                                                {request.title}
-                                            </Link>
+                                                <Link
+                                                    to={`/student/requests/${request.id}`}
+                                                    className="text-green-600 hover:underline"
+                                                >
+                                                    {request.title}
+                                                </Link>
 
-                                        </td>
-                                        <td>{request.category}</td>
-                                        <td>{request.location}</td>
-                                        <td>{request.status}</td>
-                                    </tr>
-                                ))}
+                                            </td>
+                                            <td>{request.category}</td>
+                                            <td>{request.location}</td>
+                                            <td><StatusBadge value={request.status} /></td>
+                                        </tr>
+                                    ))
+                                )}
                             </tbody>
                         </table>
                     )}

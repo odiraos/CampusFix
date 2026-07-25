@@ -14,4 +14,21 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
+api.interceptors.response.use(
+  (response) => response,
+
+  (error) => {
+    const token = localStorage.getItem("access");
+
+    if (error.response?.status === 401 && token) {
+      localStorage.removeItem("access");
+      localStorage.removeItem("refresh");
+
+      window.location.replace("/");
+    }
+
+    return Promise.reject(error);
+  }
+);
+
 export default api;

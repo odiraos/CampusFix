@@ -3,8 +3,10 @@ import api from "../api/axios";
 
 const AuthContext = createContext();
 
+
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     loadCurrentUser();
@@ -13,7 +15,10 @@ export function AuthProvider({ children }) {
   async function loadCurrentUser() {
     const token = localStorage.getItem("access");
 
-    if (!token) return;
+    if (!token) {
+      setLoading(false);
+      return;
+    }
 
     try {
       const response = await api.get("auth/me/");
@@ -21,10 +26,12 @@ export function AuthProvider({ children }) {
     } catch (error) {
       console.error("Unable to load current user:", error);
       logout();
+    } finally {
+      setLoading(false);
     }
   }
 
-  const login = async (email, password) => {
+  async function login(email, password) {
     const response = await api.post("auth/login/", {
       email,
       password,
@@ -36,20 +43,23 @@ export function AuthProvider({ children }) {
     const me = await api.get("auth/me/");
 
     setUser(me.data);
+    setLoading(false);
 
     return me.data;
-  };
+  }
 
   const logout = () => {
     localStorage.removeItem("access");
     localStorage.removeItem("refresh");
     setUser(null);
+    setLoading(false);
   };
 
   return (
     <AuthContext.Provider
       value={{
         user,
+        loading,
         login,
         logout,
       }}

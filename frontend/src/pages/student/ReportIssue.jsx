@@ -5,13 +5,14 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
+import toast from "react-hot-toast";
 import api from "@/api/axios";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
 } from "@/components/ui/select";
 
 export default function ReportIssue() {
@@ -36,7 +37,7 @@ export default function ReportIssue() {
         try {
             await api.post("maintenance/requests/", form);
 
-            alert("Maintenance request submitted successfully!");
+            toast.success("Maintenance request submitted successfully!");
 
             setForm({
                 title: "",
@@ -47,9 +48,7 @@ export default function ReportIssue() {
             });
 
         } catch (error) {
-            console.error(error);
-
-            alert("Unable to submit request.");
+            toast.error("Submission failed.");
         }
     };
 

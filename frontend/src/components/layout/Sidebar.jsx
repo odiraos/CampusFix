@@ -23,13 +23,7 @@ export default function Sidebar() {
       : user?.role === "MAINTENANCE_OFFICER"
         ? "/officer"
         : "/student";
-  console.log("Sidebar user:", user);
-  console.log("Sidebar role:", user?.role);
-  console.log("Dashboard route:", dashboardRoute);
-
-  console.log(user);
-  console.log("Role:", user?.role);
-
+  
   const isAdmin = user?.role === "ADMIN";
   const isOfficer = user?.role === "MAINTENANCE_OFFICER";
   const isStudent = user?.role === "STUDENT_STAFF";

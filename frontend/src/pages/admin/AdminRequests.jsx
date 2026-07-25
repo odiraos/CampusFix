@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 
+import StatusBadge from "@/components/common/StatusBadge";
+import toast from "react-hot-toast";
 import DashboardLayout from "@/components/layout/DashboardLayout";
 import api from "@/api/axios";
 
@@ -46,27 +48,28 @@ export default function AdminRequests() {
   }
 
   async function assignOfficer(requestId, officerId) {
-  try {
-    const response = await api.patch(
-      `maintenance/requests/${requestId}/assign/`,
-      {
-        assigned_to: officerId,
-      }
-    );
+    try {
+      const response = await api.patch(
+        `maintenance/requests/${requestId}/assign/`,
+        {
+          assigned_to: officerId,
+        }
+      );
 
-    setRequests((current) =>
-      current.map((request) =>
-        request.id === requestId
-          ? response.data
-          : request
-      )
-    );
+      setRequests((current) =>
+        current.map((request) =>
+          request.id === requestId
+            ? response.data
+            : request
+        )
+      );
+      toast.success("Officer assigned successfully.");
 
-  } catch (error) {
-    console.error(error);
-    alert("Unable to assign officer.");
+    } catch (error) {
+      console.error(error);
+      toast.error("Assignment failed.");
+    }
   }
-}
 
   return (
     <DashboardLayout title="Admin - Manage Requests">
@@ -97,61 +100,77 @@ export default function AdminRequests() {
 
             <tbody>
 
-              {requests.map((request) => (
-
-                <tr
-                  key={request.id}
-                  className="border-b"
-                >
-
-                  <td className="py-4">
-                    {request.title}
+              {requests.length === 0 ? (
+                <tr>
+                  <td
+                    colSpan={5}
+                    className="py-12 text-center text-slate-500"
+                  >
+                    <p className="text-lg font-medium">
+                      No maintenance requests found.
+                    </p>
+                    <p className="text-sm">
+                      Requests will appear here once they are submitted.
+                    </p>
                   </td>
-
-                  <td>{request.category}</td>
-
-                  <td>{request.location}</td>
-
-                  <td>{request.status}</td>
-
-                  <td className="w-72">
-
-
-                    <Select
-                      value={request.assigned_to ? String(request.assigned_to) : ""}
-                      onValueChange={(value) =>
-                        assignOfficer(request.id, value)
-                      }
-                    >
-
-                      <SelectTrigger>
-                        <SelectValue>
-                            {request.assigned_to_name || "Assign Officer"}
-                        </SelectValue>
-                      </SelectTrigger>
-
-                      <SelectContent>
-
-                        {officers.map((officer) => (
-
-                          <SelectItem
-                            key={officer.id}
-                            value={officer.id.toString()}
-                          >
-                            {officer.full_name}
-                          </SelectItem>
-
-                        ))}
-
-                      </SelectContent>
-
-                    </Select>
-
-                  </td>
-
                 </tr>
+              ) : (
+                requests.map((request) => (
 
-              ))}
+                  <tr
+                    key={request.id}
+                    className="border-b"
+                  >
+
+                    <td className="py-4">
+                      {request.title}
+                    </td>
+
+                    <td>{request.category}</td>
+
+                    <td>{request.location}</td>
+
+                    <td><StatusBadge value={request.status} /></td>
+
+                    <td className="w-72">
+
+
+                      <Select
+                        value={request.assigned_to ? String(request.assigned_to) : ""}
+                        onValueChange={(value) =>
+                          assignOfficer(request.id, value)
+                        }
+                      >
+
+                        <SelectTrigger>
+                          <SelectValue>
+                            {request.assigned_to_name || "Assign Officer"}
+                          </SelectValue>
+                        </SelectTrigger>
+
+                        <SelectContent>
+
+                          {officers.map((officer) => (
+
+                            <SelectItem
+                              key={officer.id}
+                              value={officer.id.toString()}
+                            >
+                              {officer.full_name}
+                            </SelectItem>
+
+                          ))}
+
+                        </SelectContent>
+
+                      </Select>
+
+                    </td>
+
+                  </tr>
+
+                ))
+              )}
 
             </tbody>
 

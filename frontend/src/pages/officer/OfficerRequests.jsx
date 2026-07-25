@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-
+import toast from "react-hot-toast";
 import DashboardLayout from "@/components/layout/DashboardLayout";
 import api from "@/api/axios";
 
@@ -43,11 +43,10 @@ export default function OfficerRequests() {
         }
       );
 
+      toast.success("Request status updated.");
       fetchRequests();
-
     } catch (error) {
-      console.error(error);
-      alert("Unable to update status.");
+      toast.error("Unable to update request.");
     }
   }
 
@@ -81,7 +80,16 @@ export default function OfficerRequests() {
 
             <tbody>
 
-              {requests.map((request) => (
+              {requests.length === 0 ? (
+                <div className="text-center py-12 text-slate-500">
+                  <p className="text-lg font-medium">
+                    No maintenance requests found.
+                  </p>
+                  <p className="text-sm">
+                    Requests will appear here once they are submitted.
+                  </p>
+                </div>
+              ) : (requests.map((request) => (
 
                 <tr
                   key={request.id}
@@ -104,12 +112,10 @@ export default function OfficerRequests() {
 
                     <Select
                       value={request.status}
-                      onValueChange={(value) =>
-                        updateStatus(request.id, value)
-                      }
+                      onValueChange={(value) => updateStatus(request.id, value)}
                     >
 
-                      <SelectTrigger>
+                      <SelectTrigger className="w-40">
 
                         <SelectValue />
 
@@ -145,7 +151,8 @@ export default function OfficerRequests() {
 
                 </tr>
 
-              ))}
+              ))
+              )}
 
             </tbody>
 
