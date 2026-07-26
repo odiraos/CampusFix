@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 
 import StatusBadge from "@/components/common/StatusBadge";
 import toast from "react-hot-toast";
@@ -35,6 +36,7 @@ export default function AdminRequests() {
       setRequests(response.data);
     } catch (error) {
       console.error(error);
+      toast.error("Unable to load requests.");
     }
   }
 
@@ -44,6 +46,7 @@ export default function AdminRequests() {
       setOfficers(response.data);
     } catch (error) {
       console.error(error);
+      toast.error("Unable to load maintenance officers.");
     }
   }
 
@@ -63,8 +66,8 @@ export default function AdminRequests() {
             : request
         )
       );
-      toast.success("Officer assigned successfully.");
 
+      toast.success("Officer assigned successfully.");
     } catch (error) {
       console.error(error);
       toast.error("Assignment failed.");
@@ -73,42 +76,35 @@ export default function AdminRequests() {
 
   return (
     <DashboardLayout title="Admin - Manage Requests">
-
       <Card>
-
         <CardHeader>
           <CardTitle>Maintenance Requests</CardTitle>
         </CardHeader>
 
         <CardContent>
-
           <table className="w-full">
-
             <thead>
-
               <tr className="border-b">
-
                 <th className="text-left py-3">Title</th>
                 <th className="text-left">Category</th>
                 <th className="text-left">Location</th>
                 <th className="text-left">Status</th>
+                <th className="text-left">Attachment</th>
                 <th className="text-left">Assigned Officer</th>
-
               </tr>
-
             </thead>
 
             <tbody>
-
               {requests.length === 0 ? (
                 <tr>
                   <td
-                    colSpan={5}
+                    colSpan={6}
                     className="py-12 text-center text-slate-500"
                   >
                     <p className="text-lg font-medium">
                       No maintenance requests found.
                     </p>
+
                     <p className="text-sm">
                       Requests will appear here once they are submitted.
                     </p>
@@ -116,32 +112,61 @@ export default function AdminRequests() {
                 </tr>
               ) : (
                 requests.map((request) => (
-
                   <tr
                     key={request.id}
                     className="border-b"
                   >
-
                     <td className="py-4">
-                      {request.title}
+                      <Link
+                        to={`/student/requests/${request.id}`}
+                        className="text-green-600 hover:underline font-medium"
+                      >
+                        {request.title}
+                      </Link>
                     </td>
 
                     <td>{request.category}</td>
 
                     <td>{request.location}</td>
 
-                    <td><StatusBadge value={request.status} /></td>
+                    <td>
+                      <StatusBadge value={request.status} />
+                    </td>
+
+                    <td>
+                      {request.attachment ? (
+                        <a
+                          href={request.attachment}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          <img
+                            src={request.attachment}
+                            alt="Issue attachment"
+                            className="w-20 h-20 rounded object-cover border"
+                            onError={(e) => {
+                              e.currentTarget.style.display = "none";
+                            }}
+                          />
+                        </a>
+                      ) : (
+                        <span className="text-sm text-slate-500">
+                          No image
+                        </span>
+                      )}
+                    </td>
 
                     <td className="w-72">
-
-
                       <Select
-                        value={request.assigned_to ? String(request.assigned_to) : ""}
+                        value={
+                          request.assigned_to
+                            ? String(request.assigned_to)
+                            : ""
+                        }
                         onValueChange={(value) =>
                           assignOfficer(request.id, value)
                         }
                       >
-
                         <SelectTrigger>
                           <SelectValue>
                             {request.assigned_to_name || "Assign Officer"}
@@ -149,37 +174,24 @@ export default function AdminRequests() {
                         </SelectTrigger>
 
                         <SelectContent>
-
                           {officers.map((officer) => (
-
                             <SelectItem
                               key={officer.id}
                               value={officer.id.toString()}
                             >
                               {officer.full_name}
                             </SelectItem>
-
                           ))}
-
                         </SelectContent>
-
                       </Select>
-
                     </td>
-
                   </tr>
-
                 ))
               )}
-
             </tbody>
-
           </table>
-
         </CardContent>
-
       </Card>
-
     </DashboardLayout>
   );
 }

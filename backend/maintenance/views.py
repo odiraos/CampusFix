@@ -1,8 +1,15 @@
+from django.http import request
 from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework import status
+from rest_framework.parsers import (
+    MultiPartParser,
+    FormParser,
+    JSONParser,
+)
+
 
 from .serializers import (
     MaintenanceRequestSerializer,
@@ -17,6 +24,11 @@ User = get_user_model()
 class MaintenanceRequestViewSet(viewsets.ModelViewSet):
     serializer_class = MaintenanceRequestSerializer
     permission_classes = [IsAuthenticated]
+    parser_classes = [
+        MultiPartParser,
+        FormParser,
+        JSONParser,
+    ]
 
     def get_queryset(self):
         user = self.request.user
@@ -38,7 +50,15 @@ class MaintenanceRequestViewSet(viewsets.ModelViewSet):
         
 
     def perform_create(self, serializer):
+        
         serializer.save(reported_by=self.request.user)
+        
+    def create(self, request, *args, **kwargs):
+        print("===== CREATE CALLED =====")
+        print("FILES:", request.FILES)
+        print("DATA:", request.data)
+
+        return super().create(request, *args, **kwargs)
         
     @action(detail=True, methods=["patch"])
     def update_status(self, request, pk=None):
@@ -82,7 +102,7 @@ class MaintenanceRequestViewSet(viewsets.ModelViewSet):
             serializer.errors,
             status=status.HTTP_400_BAD_REQUEST,
         )
-    
+           
 class AdminDashboardView(APIView):
     permission_classes = [IsAuthenticated]
 

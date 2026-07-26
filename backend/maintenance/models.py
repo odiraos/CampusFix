@@ -28,6 +28,7 @@ class MaintenanceRequest(models.Model):
     title = models.CharField(max_length=200)
     description = models.TextField()
     location = models.CharField(max_length=255)
+    attachment = models.ImageField(upload_to="maintenance_images/", null=True, blank=True)
 
     category = models.CharField(
         max_length=20,
