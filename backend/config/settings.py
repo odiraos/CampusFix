@@ -8,7 +8,7 @@ load_dotenv()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = 'django-insecure-5$tn#0kef)^1^1=eh@iq@iv7hyu2n-a4he)1bz1o(y0oo812&n'
+SECRET_KEY = os.getenv("SECRET_KEY")
 
 DEBUG = os.getenv("DEBUG", "False") == "True"
 
@@ -16,7 +16,6 @@ ALLOWED_HOSTS = [
     "campusfix-sowq.onrender.com",
     "localhost",
     "127.0.0.1",
-    "odiracampusfix.netlify.app"
 ]
 
 INSTALLED_APPS = [
@@ -155,3 +154,7 @@ CORS_ALLOWED_ORIGINS = [
 ]
 
 CORS_ALLOW_CREDENTIALS = True
+
+CSRF_TRUSTED_ORIGINS = [
+    "https://odiracampusfix.netlify.app",
+]
