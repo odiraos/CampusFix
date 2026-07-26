@@ -10,7 +10,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = 'django-insecure-5$tn#0kef)^1^1=eh@iq@iv7hyu2n-a4he)1bz1o(y0oo812&n'
 
-DEBUG = True
+DEBUG = os.getenv("DEBUG", "False") == "True"
 
 ALLOWED_HOSTS = [
     "campusfix-sowq.onrender.com",
