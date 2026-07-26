@@ -12,8 +12,11 @@ SECRET_KEY = 'django-insecure-5$tn#0kef)^1^1=eh@iq@iv7hyu2n-a4he)1bz1o(y0oo812&n
 
 DEBUG = True
 
-ALLOWED_HOSTS = []
-
+ALLOWED_HOSTS = [
+    "campusfix-sowq.onrender.com",
+    "localhost",
+    "127.0.0.1",
+]
 
 INSTALLED_APPS = [
     'django.contrib.admin',
