@@ -16,6 +16,7 @@ ALLOWED_HOSTS = [
     "campusfix-sowq.onrender.com",
     "localhost",
     "127.0.0.1",
+    "odiracampusfix.netlify.app"
 ]
 
 INSTALLED_APPS = [
@@ -150,6 +151,7 @@ CORS_ALLOWED_ORIGINS = [
     "http://127.0.0.1:5173",
     "http://127.0.0.1:4173",
     "https://campusfix-sowq.onrender.com",
+    "https://odiracampusfix.netlify.app",
 ]
 
 CORS_ALLOW_CREDENTIALS = True
