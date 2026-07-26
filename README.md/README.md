@@ -41,7 +41,7 @@ CampusFix is a role-based Campus Maintenance Management System developed using D
 - Django
 - Django REST Framework
 - Simple JWT
-- SQLite
+- PostgreSQL/SQLite
 
 ### Frontend
 
@@ -119,7 +119,7 @@ PATCH /api/auth/users/:id/role/
 DELETE /api/auth/users/:id/
 ```
 
-API documentation link: https://documenter.getpostman.com/view/23729517/2sBY4QtfX7
+API documentation link:
 
 ---
 

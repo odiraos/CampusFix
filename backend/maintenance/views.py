@@ -1,10 +1,5 @@
-from urllib import request
-
 from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated
-from rest_framework.decorators import action
-from rest_framework.response import Response
-from rest_framework import status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework import status
@@ -15,7 +10,6 @@ from .serializers import (
 )
 
 from .models import MaintenanceRequest
-from .serializers import MaintenanceRequestSerializer
 from django.contrib.auth import get_user_model
 from rest_framework.views import APIView
 User = get_user_model()
@@ -42,7 +36,6 @@ class MaintenanceRequestViewSet(viewsets.ModelViewSet):
             reported_by=user
         ).order_by("-created_at")
         
-        return MaintenanceRequest.objects.all().order_by("-created_at")
 
     def perform_create(self, serializer):
         serializer.save(reported_by=self.request.user)
